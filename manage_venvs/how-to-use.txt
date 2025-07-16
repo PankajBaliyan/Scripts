@@ -1,0 +1,57 @@
+# This script sets up a temporary environment using pipenv.
+# Put pip_temp_env.sh script in the same directory as your project, and run it to create a temporary environment.
+# Commands to run:
+chmod +x pipenv_temp_env.sh && ./pipenv_temp_env.sh
+
+How to Use the Python Environment Setup Script
+=====================================
+
+This Bash script simplifies setting up and managing Python virtual environments using Pipenv. Follow these steps to use it effectively:
+
+1. **Prerequisites**
+   - Ensure you have `pipenv`, `jupyter`, and `python3` installed on your system.
+   - For macOS/Linux, you can install them using package managers like Homebrew (`brew install pipenv jupyter python`) or apt (`sudo apt install python3-pip python3-venv jupyter`).
+   - Verify installations by running `pipenv --version`, `jupyter --version`, and `python3 --version`.
+
+2. **Download the Script**
+   - Save the script as `pipenv_temp_env.sh` in your project directory.
+   - Make it executable: `chmod +x pipenv_temp_env.sh`.
+
+3. **Run the Script**
+   - Navigate to your project directory: `cd /path/to/your/project`.
+   - Execute the script: `./pipenv_temp_env.sh`.
+   - The script will guide you through the process with interactive prompts.
+
+4. **Key Features and Interactions**
+   - **Dependency Check**: The script checks for required tools and alerts you if any are missing.
+   - **Python Version Selection**: It displays the default Python version and lets you choose a specific version (e.g., `3.12` or a full path like `/usr/bin/python3.11`).
+   - **Environment Management**: Detects existing virtual environments for the project and allows you to keep, delete, or select specific ones to remove.
+   - **Environment Creation**: Creates a local `.venv` environment using the selected Python version.
+   - **Post-Creation Options**:
+     - Activate the environment (`a`).
+     - Delete it (`d`).
+     - Move it to a global directory (`s`) at `~/.local/share/virtualenvs`.
+     - Keep it as is (`k`).
+   - **Dependency Installation**: Installs packages from a `requirements.txt` file or a default set (pandas, numpy, etc.) if none exists, and generates a `requirements.txt`.
+   - **Jupyter Kernel Registration**: Optionally registers the environment as a Jupyter kernel for use in JupyterLab or VS Code.
+   - **Environment Activation**: Offers to activate the environment immediately or provides instructions for later activation.
+
+5. **Example Workflow**
+   - Run `./pipenv_temp_env.sh`.
+   - Press Enter to keep the default Python version or type `y` to choose another (e.g., `3.11`).
+   - Choose to keep (`k`) or manage existing environments if detected.
+   - Select `a` to activate the new environment or `s` to save it globally.
+   - Choose `y` to install dependencies and `y` to register a Jupyter kernel if needed.
+   - Activate the environment with `pipenv shell` or `source .venv/bin/activate` (for local) or `source ~/.local/share/virtualenvs/<env-name>/bin/activate` (for global).
+
+6. **Tips**
+   - Ensure your project directory is writable and has no conflicting `.venv` or `Pipfile` from previous setups.
+   - If you encounter issues, check the color-coded output for errors (red) or warnings (yellow).
+   - Use `ls /usr/bin/python3.*` to see available Python versions if needed.
+   - To remove a Jupyter kernel, run `jupyter kernelspec uninstall <kernel-name>`.
+
+7. **Support**
+   - For issues or suggestions, check the GitHub repository: https://github.com/PankajBaliyan/env-management.
+   - The script is designed for macOS and Linux; some features (e.g., `sed` commands) are OS-specific.
+
+Enjoy a streamlined Python setup process! 🚀
