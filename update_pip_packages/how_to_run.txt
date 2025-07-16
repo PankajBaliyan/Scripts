@@ -1,0 +1,9 @@
+✅ How to Use
+	1.	Save it as pip_package_manager.py
+	2.	Make sure your virtual environment is activated
+	3.	Run it: python pip_package_manager.py
+
+
+✅ How to Use in other folder/project
+1. Run it: 
+(Server-Bookmark-Manager) ➜  Server-Bookmark-Manager git:(main) ✗ python3 ../../../Projects-Temp/Scripts/update_pip_packages/pip_package_manager.py 
