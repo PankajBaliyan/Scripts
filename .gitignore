@@ -1,3 +1,4 @@
 *.sql
 .DS_Store
 generate_pdf/*.pdf
+import_databases/.my.cnf-export
