@@ -1,0 +1,8 @@
+✅ How to Use
+	1.	Save it as git_manager.py
+	2.	Run it: python git_manager.py
+
+
+✅ How to Use in other folder/project
+1. Run it: 
+	python3 /Users/pankajkumar/Downloads/Coding/Projects-Temp/Scripts/git_management/git_manager.py
