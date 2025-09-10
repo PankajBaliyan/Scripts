@@ -48,7 +48,7 @@ read_input() {
     local prompt=$1
     local default=$2
     local input
-    read -t 20 -p "$prompt" input || input="$default"
+    read -p "$prompt" input || input="$default"
     # convert to lowercase & trim spaces
     input=$(echo "$input" | tr '[:upper:]' '[:lower:]' | xargs)
     echo "$input"
@@ -195,10 +195,10 @@ else
     echo -e "\n${YELLOW}⚠️  pyenv not found. Cannot list installed Python versions.${NC}"
 fi
 
-CHANGE_VER=$(read_input "💬 Do you want to use a different Python version? (y/N) [auto-continue in 20s]: " "n")
+CHANGE_VER=$(read_input "💬 Do you want to use a different Python version? (y/N): " "n")
 
 if [[ "$CHANGE_VER" == "y" ]]; then
-    USER_INPUT=$(read_input "🔢 Enter Python version (e.g., 3.12.11 or python3.11 or full path) [auto-continue in 20s]: " "")
+    USER_INPUT=$(read_input "🔢 Enter Python version (e.g., 3.12.11 or python3.11 or full path): " "")
     USER_INPUT=$(echo "$USER_INPUT" | xargs) # trim spaces
 
     # 🧪 Validate input Python version using pyenv
@@ -316,7 +316,7 @@ while true; do
         done
 
     elif [[ "$ACTION" == "s" ]]; then
-        TO_DELETE=$(read_input "🧾 Enter environment numbers (comma-separated) to delete (e.g., 1,3) [auto-continue in 20s]: " "")
+        TO_DELETE=$(read_input "🧾 Enter environment numbers (comma-separated) to delete (e.g., 1,3): " "")
         if [[ -z "$TO_DELETE" ]]; then
             echo -e "${YELLOW}⏭️ No input provided. Keeping all environments.${NC}"
             break
@@ -378,7 +378,7 @@ echo "  [d] → Delete it"
 echo "  [s] → Save it to global envs (~/.local/share/virtualenvs)"
 echo "  [k] → Keep it as is (do nothing)"
 
-POST_ACTION=$(read_input "Your choice (a/d/s/k) [auto-continue in 20s]: " "k")
+POST_ACTION=$(read_input "Your choice (a/d/s/k): " "k")
 
 if [[ "$POST_ACTION" == "a" ]]; then
     echo -e "${BLUE}🚀 Activating environment...${NC}"
@@ -461,7 +461,7 @@ fi
 # 🔹 FEATURE 6: Install Dependencies (Interactive)
 # --------------------------------------------------
 
-INSTALL_CHOICE=$(read_input "💬 Do you want to install dependencies from requirements.txt if it exists? (y/N) [auto-continue in 20s]: " "n")
+INSTALL_CHOICE=$(read_input "💬 Do you want to install dependencies from requirements.txt if it exists? (y/N): " "n")
 if [[ "$INSTALL_CHOICE" != "y" ]]; then
     echo -e "${YELLOW}⏭️ Skipping dependency installation.${NC}"
     echo ""
@@ -537,7 +537,7 @@ fi
 # 🔹 FEATURE 7: Register Jupyter Kernel (Optional)
 # --------------------------------------------------
 
-REGISTER_CHOICE=$(read_input "💬 Will you use Jupyter notebooks outside PyCharm (e.g., JupyterLab, VS Code) [Registering Jupyter kernel]? (y/N) [auto-continue in 20s]: " "n")
+REGISTER_CHOICE=$(read_input "💬 Will you use Jupyter notebooks outside PyCharm (e.g., JupyterLab, VS Code) [Registering Jupyter kernel]? (y/N): " "n")
 
 if [[ "$REGISTER_CHOICE" != "y" ]]; then
     echo -e "${YELLOW}⏭️ Skipping kernel registration.${NC}"
@@ -599,7 +599,7 @@ fi
 # 🔹 FEATURE 8: Activate Newly Created Environment
 # --------------------------------------------------
 
-ACTIVATE_CHOICE=$(read_input "💬 Do you want to activate the newly created environment now? (y/N) [auto-continue in 20s]: " "n")
+ACTIVATE_CHOICE=$(read_input "💬 Do you want to activate the newly created environment now? (y/N): " "n")
 
 if [[ "$ACTIVATE_CHOICE" == "y" ]]; then
     echo -e "${BLUE}🚀 Activating the newly created Pipenv environment...${NC}"
