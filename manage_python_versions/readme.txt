@@ -1,0 +1,1 @@
+clear && chmod +x manage_python.sh && ./manage_python.sh
