@@ -1,0 +1,3 @@
+# No Python package dependencies are required for this shell helper.
+# This script manages virtual environments using Python's built-in venv module.
+# If you want to add project-specific dependencies later, install them inside the activated venv.

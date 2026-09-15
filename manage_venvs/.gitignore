@@ -1,0 +1,23 @@
+# Python virtual environments
+.venv/
+venv/
+.env/
+*venv*/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Editor / OS files
+.DS_Store
+.vscode/
+.idea/
+
+# pip and packaging
+*.egg-info/
+.dist/
+build/
+dist/
+
+# Local env metadata
+.python-version
