@@ -7,6 +7,40 @@ YELLOW='\033[1;33m'
 BLUE='\033[1;34m'
 NC='\033[0m' # No Color
 
+# --------------------------------------------------
+# Optional helper: install this script to ~/bin and add alias
+# Usage: ./pipenv_temp_env.sh --install-bin
+# --------------------------------------------------
+if [[ "$1" == "--install-bin" ]]; then
+    BIN_DIR="$HOME/bin"
+    mkdir -p "$BIN_DIR"
+
+    # Copy this script to create-venv-here.sh in the bin dir
+    TARGET="$BIN_DIR/create-venv-here.sh"
+    cp "$0" "$TARGET"
+    chmod +x "$TARGET"
+
+    SHELL_NAME=$(basename "$SHELL")
+    if [[ "$SHELL_NAME" == "zsh" ]]; then
+        RCFILE="$HOME/.zshrc"
+    else
+        RCFILE="$HOME/.bashrc"
+    fi
+
+    ALIAS_LINE="alias create-venv-here=\"$TARGET\""
+    # add alias if not present
+    if ! grep -Fxq "$ALIAS_LINE" "$RCFILE" 2>/dev/null; then
+        echo "$ALIAS_LINE" >> "$RCFILE"
+        # Attempt to source if interactive
+        if [[ -n "$PS1" ]]; then
+            source "$RCFILE" 2>/dev/null || true
+        fi
+    fi
+
+    echo "Installed create-venv-here at $TARGET and added alias to $RCFILE"
+    exit 0
+fi
+
 # -----------------------------------------------
 # 🌍 Detect Operating System and Persist Choice
 # -----------------------------------------------
@@ -44,11 +78,12 @@ if [[ "$PROJECT_DIR" == *" "* || "$PROJECT_DIR" == *"'"* ]]; then
 fi
 
 # === Helper function to read input case-insensitive and trim whitespace ===
+# With 20-second timeout for automated scripts
 read_input() {
     local prompt=$1
     local default=$2
     local input
-    read -p "$prompt" input || input="$default"
+    read -t 20 -p "$prompt" input || input="$default"
     # convert to lowercase & trim spaces
     input=$(echo "$input" | tr '[:upper:]' '[:lower:]' | xargs)
     echo "$input"
@@ -634,4 +669,123 @@ else
     else
         echo -e "${BLUE}   pipenv shell${NC}"
     fi
+fi
+
+# ============================================================
+# ✅ TESTING SUITE (Merged from check_temp_env.sh)
+# ============================================================
+
+# This section contains tests for validating the script above
+# Usage: Run this script manually or set TEST_MODE=true to only run tests
+
+TEST_MODE="${TEST_MODE:-false}"
+
+if [[ "$TEST_MODE" == "true" ]]; then
+    PASSED=0
+    FAILED=0
+    TOTAL=0
+
+    # === TEST UTILITIES ===
+
+    run_test() {
+        local test_desc="$1"
+        local PATH_OVERRIDE="$2"
+        echo "=== Test: $test_desc ==="
+        OUTPUT=$(PATH="$PATH_OVERRIDE:$PATH" bash "$0" 2>&1)
+        EXIT_CODE=$?
+        echo "$OUTPUT"
+        echo "Exit code: $EXIT_CODE"
+        echo
+        TOTAL=$((TOTAL + 1))
+        return $EXIT_CODE
+    }
+
+    prepare_fake_commands() {
+        local tmpdir="$1"
+        shift
+        for cmd in "$@"; do
+            echo -e "#!/usr/bin/env bash\necho \"$cmd dummy version\"" >"$tmpdir/$cmd"
+            chmod +x "$tmpdir/$cmd"
+        done
+    }
+
+    check_result() {
+        local expected_exit="$1"
+        shift
+        local expected_msgs=("$@")
+
+        # Check exit code
+        if [[ $EXIT_CODE -ne $expected_exit ]]; then
+            echo "FAIL: Expected exit code $expected_exit but got $EXIT_CODE"
+            FAILED=$((FAILED + 1))
+            return
+        fi
+
+        # Check all expected messages appear in output
+        for msg in "${expected_msgs[@]}"; do
+            if ! echo "$OUTPUT" | grep -qF "$msg"; then
+                echo "FAIL: Expected message not found: $msg"
+                FAILED=$((FAILED + 1))
+                return
+            fi
+        done
+
+        echo "PASS"
+        PASSED=$((PASSED + 1))
+    }
+
+    # === TEST CASES ===
+
+    test_all_present() {
+        tmpdir=$(mktemp -d)
+        prepare_fake_commands "$tmpdir" pipenv jupyter python3
+        run_test "All commands present" "$tmpdir"
+        check_result 0 "All required dependencies are installed"
+        rm -rf "$tmpdir"
+    }
+
+    test_missing_pipenv() {
+        tmpdir=$(mktemp -d)
+        prepare_fake_commands "$tmpdir" jupyter python3
+        run_test "Missing pipenv" "$tmpdir"
+        check_result 1 "pipenv is not installed" "One or more dependencies are missing"
+        rm -rf "$tmpdir"
+    }
+
+    test_missing_jupyter() {
+        tmpdir=$(mktemp -d)
+        prepare_fake_commands "$tmpdir" pipenv python3
+        run_test "Missing jupyter" "$tmpdir"
+        check_result 1 "jupyter is not installed" "One or more dependencies are missing"
+        rm -rf "$tmpdir"
+    }
+
+    test_missing_python3() {
+        tmpdir=$(mktemp -d)
+        prepare_fake_commands "$tmpdir" pipenv jupyter
+        run_test "Missing python3" "$tmpdir"
+        check_result 1 "python3 is not installed" "One or more dependencies are missing"
+        rm -rf "$tmpdir"
+    }
+
+    test_missing_all() {
+        run_test "Missing all commands" "/nonexistent_path"
+        check_result 1 "pipenv is not installed" "jupyter is not installed" "python3 is not installed" "One or more dependencies are missing"
+    }
+
+    # Run all tests
+    test_all_present
+    test_missing_pipenv
+    test_missing_jupyter
+    test_missing_python3
+    test_missing_all
+
+    # Summary
+    echo "=== Test Summary ==="
+    echo "Total tests: $TOTAL"
+    echo "Passed: $PASSED"
+    echo "Failed: $FAILED"
+
+    exit 0
+fi
 fi
